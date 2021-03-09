@@ -3,6 +3,7 @@ package u
 import (
 	"encoding/json"
 	"log"
+	"testing"
 )
 
 func PrintJson(v interface{}) {
@@ -21,4 +22,22 @@ func LogJson(log *log.Logger, v interface{}) {
 	}
 
 	log.Println(string(bs))
+}
+
+func TlogJson(t *testing.T, v interface{}) {
+	bs, err := json.MarshalIndent(v, "", "    ")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(string(bs))
+}
+
+func TfatalJson(t *testing.T, v interface{}) {
+	bs, err := json.MarshalIndent(v, "", "    ")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Fatal(string(bs))
 }
