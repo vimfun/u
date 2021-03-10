@@ -6,6 +6,11 @@ import (
 	"testing"
 )
 
+
+func PringTypeValue(v interface{}) {
+    log.Printf("%T: %#v", v)
+}
+
 func PrintJson(v interface{}) {
 	bs, err := json.MarshalIndent(v, "", "    ")
 	if err != nil {
