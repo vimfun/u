@@ -6,43 +6,60 @@ import (
 	"testing"
 )
 
-
 func PringTypeValue(v interface{}) {
     log.Printf("%T: %#v", v)
 }
 
-func PrintJson(v interface{}) {
+func toJson(v interface{}) (string, error) {
 	bs, err := json.MarshalIndent(v, "", "    ")
+	if err != nil {
+		return "", err
+	}
+
+	return string(bs), nil
+}
+
+
+func J(v interface{}) string {
+    s, err := toJson(v)
 	if err != nil {
 		log.Fatal(err)
 	}
+	return s
+}
 
-	log.Println(string(bs))
+func LoggerJson(log *log.Logger) func(v interface{}) string {
+    return func (v interface{}) string {
+        s, err := toJson(v)
+        if err != nil {
+            log.Fatal(err)
+        }
+        return s
+    }
+}
+
+func TestingJson(t *testing.T) func(v interface{}) string {
+    return func (v interface{}) string {
+        s, err := toJson(v)
+        if err != nil {
+            t.Fatal(err)
+        }
+        return s
+    }
+}
+
+func PrintJson(v interface{}) {
+    log.Println(J(v))
 }
 
 func LogJson(log *log.Logger, v interface{}) {
-	bs, err := json.MarshalIndent(v, "", "    ")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println(string(bs))
+	log.Println(LoggerJson(log)(v))
 }
 
 func TlogJson(t *testing.T, v interface{}) {
-	bs, err := json.MarshalIndent(v, "", "    ")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	t.Log(string(bs))
+	t.Log(TestingJson(t)(v))
 }
 
 func TfatalJson(t *testing.T, v interface{}) {
-	bs, err := json.MarshalIndent(v, "", "    ")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	t.Fatal(string(bs))
+	t.Fatal(TestingJson(t)(v))
 }
